@@ -67,6 +67,17 @@
                   {{ td.value }}
                 </span>
               </template>
+              <!-- 调节行高的 bar -->
+              <div
+                v-if="_tdi === 0"
+                style="
+                  cursor: ns-resize;
+                  width: 100px;
+                  height: 5px;
+                  position: absolute;
+                  bottom: -2px;
+                "
+              ></div>
             </td>
           </tr>
           <el-button class="add-row-btn" @click="addRow" size="small">
