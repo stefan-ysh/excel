@@ -5,7 +5,7 @@
       style="display: flex; align-items: center; justify-content: center"
     >
       <div v-if="currentCell.id" style="display: flex; align-items: center">
-        <!-- {{ currentCell.tr }}行{{ currentCell.td }}列  -->
+        {{ currentCell.tr }}行{{ currentCell.td }}列 
         填充色:
         <el-color-picker
           v-model="currentCell.style.background"
@@ -32,8 +32,12 @@
       <table cellspacing="0">
         <thead>
           <tr>
-            <th v-for="(th, _thi) in thList" :key="_thi">
-              {{ th.title === 0 ? "" : th.title }}
+            <th
+              :style="currentCell.td === th.index ? 'background:grey' : ''"
+              v-for="(th, _thi) in thList"
+              :key="_thi"
+            >
+              {{ _thi === 0 ? "" : letterList[_thi - 1] }}
             </th>
             <el-button
               style="position: fixed; right: 0"
@@ -47,12 +51,20 @@
         <tbody class="tBody">
           <tr v-for="(tr, _tri) in trList" :key="_tri">
             <td
-              :style="_tdi === 0 ? '' : convertStyle(td.style)"
+              :style="
+                _tdi === 0 && currentCell.tr === td.tr
+                  ? 'background:grey'
+                  : _tdi === 0
+                  ? ''
+                  : convertStyle(td.style)
+              "
               v-for="(td, _tdi) in tr.tdList"
               :key="_tdi"
-              :class="`
+              :class="
+                `
                 ${currentCell.id === td.id ? 'active' : ''}
-              `"
+              `
+              "
               @click.stop="_tdi === 0 ? null : clickCell(td)"
               @dblclick="editCell(td)"
             >
@@ -95,6 +107,35 @@ export default {
   name: "Excel",
   data() {
     return {
+      // letterList: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
+      letterList: [
+        "A",
+        "B",
+        "C",
+        "D",
+        "E",
+        "F",
+        "G",
+        "H",
+        "I",
+        "J",
+        "K",
+        "L",
+        "M",
+        "N",
+        "O",
+        "P",
+        "Q",
+        "R",
+        "S",
+        "T",
+        "U",
+        "V",
+        "W",
+        "X",
+        "Y",
+        "Z"
+      ],
       thList: [],
       trList: [],
       currentCell: {},
@@ -104,8 +145,8 @@ export default {
         background: "",
         color: "",
         "text-align": "",
-        "font-weight": 0,
-      },
+        "font-weight": 0
+      }
     };
   },
   created() {
@@ -149,24 +190,25 @@ export default {
       return str;
     },
     init() {
-      for (let index = 0; index < 8; index++) {
+      for (let index = 0; index < 20; index++) {
         this.thList.push({
           title: index,
+          index: index
         });
       }
-      for (let index = 0; index < 5; index++) {
+      for (let index = 0; index < 15; index++) {
         let tdList = [];
-        for (let i = 0; i < 8; i++) {
+        for (let i = 0; i < 20; i++) {
           tdList.push({
             value: i === 0 ? index + 1 : "测试文字",
             id: `${index + 1}${i + 1}`,
             tr: index + 1,
             td: i + 1,
-            style: Object.assign({}, this.cellStyle),
+            style: Object.assign({}, this.cellStyle)
           });
         }
         this.trList.push({
-          tdList,
+          tdList
         });
       }
     },
@@ -189,7 +231,7 @@ export default {
           id: `${this.trList.length + 1}${i + 1}`,
           tr: this.trList.length + 1,
           td: i + 1,
-          style: Object.assign({}, this.cellStyle),
+          style: Object.assign({}, this.cellStyle)
         });
       }
       this.trList.push({ tdList });
@@ -201,11 +243,12 @@ export default {
           id: `${i + 1}${this.thList.length + 1}`,
           tr: i + 1,
           td: this.thList.length + 1,
-          style: Object.assign({}, this.cellStyle),
+          style: Object.assign({}, this.cellStyle)
         });
       });
       this.thList.push({
         title: this.thList.length,
+        index: this.thList.length
       });
     },
     save() {
@@ -213,8 +256,8 @@ export default {
       console.log({
         tableData: {
           thList: this.thList,
-          trList: this.trList,
-        },
+          trList: this.trList
+        }
       });
     },
     cancelEdit() {
@@ -222,9 +265,9 @@ export default {
     },
     calcelEdit() {
       this.currentCell = {};
-    },
+    }
   },
-  computed: {},
+  computed: {}
 };
 </script>
 <style lang="less" scoped>
@@ -259,6 +302,7 @@ export default {
       display: inline-block;
       height: 40px;
       line-height: 40px;
+      word-break: keep-all;
     }
   }
   th {
