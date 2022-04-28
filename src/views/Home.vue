@@ -5,7 +5,7 @@
       style="display: flex; align-items: center; justify-content: center"
     >
       <div v-if="currentCell.id" style="display: flex; align-items: center">
-        {{ currentCell.tr }}行{{ currentCell.td }}列 
+        {{ currentCell.tr }}行{{ currentCell.td }}列
         填充色:
         <el-color-picker
           v-model="currentCell.style.background"
