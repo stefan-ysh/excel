@@ -4,8 +4,14 @@
       class="tools"
       style="display: flex; align-items: center; justify-content: center"
     >
-      <el-button @click="dataBack"> 回显 </el-button>
-      <div style="display: flex; align-items: center">
+      <div
+        style="
+          width: 100%;
+          display: flex;
+          align-items: center;
+          justify-content: space-around;
+        "
+      >
         填充色:
         <input
           :disabled="!currentCell.id"
@@ -70,7 +76,10 @@
             >{{ item.value }}</el-radio
           >
         </el-radio-group>
-        <el-button @click="save">保存</el-button>
+        <el-button size="mini" type="primary" plain @click="dataBack">
+          回显
+        </el-button>
+        <el-button size="mini" type="primary" @click="save">保存</el-button>
       </div>
     </div>
     <div class="excel" @click="calcelEdit">
@@ -79,11 +88,21 @@
           <tr>
             <th
               @contextmenu.stop.prevent="rightClickTh(th)"
-              :style="currentCell.td === th.index ? 'background:grey' : ''"
+              :style="
+                currentCell.td === th.index
+                  ? 'background:#eaebec;border-bottom:1px solid black;'
+                  : ''
+              "
               v-for="(th, _thi) in thList"
               :key="_thi"
             >
-              {{ _thi === 0 ? "" : letterList[_thi - 1] }}
+              {{
+                _thi === 0 && currentCell.id
+                  ? "L" + currentCell.tr + ",C" + currentCell.td
+                  : _thi === 0
+                  ? ""
+                  : letterList[_thi - 1]
+              }}
             </th>
             <el-button
               style="position: fixed; right: 0"
@@ -103,7 +122,7 @@
             <td
               :style="
                 _tdi === 0 && currentCell.tr === td.tr
-                  ? 'background:grey'
+                  ? 'background:#eaebec;border-right:1px solid black;'
                   : _tdi === 0
                   ? ''
                   : convertStyle(td.style)
@@ -342,11 +361,11 @@ export default {
           index: index,
         });
       }
-      for (let index = 0; index < 15; index++) {
+      for (let index = 0; index < 30; index++) {
         let tdList = [];
         for (let i = 0; i < 20; i++) {
           tdList.push({
-            value: i === 0 ? index + 1 : "Text",
+            value: i === 0 ? index + 1 : "",
             // 几行几列
             id: i === 0 ? "" : `${index + 1}${i}`,
             tr: index + 1,
@@ -356,7 +375,7 @@ export default {
         }
         this.trList.push({
           tr: index + 1,
-          height: 40,
+          height: 20,
           tdList,
         });
       }
@@ -391,7 +410,7 @@ export default {
         });
       }
       this.trList.push({
-        height: 40,
+        height: 20,
         tdList,
       });
     },
@@ -475,10 +494,10 @@ export default {
   }
   td,
   th {
-    border-right: 1px solid gray;
-    border-bottom: 1px solid gray;
+    border-right: 1px solid #e2e4e8;
+    border-bottom: 1px solid #e2e4e8;
     width: 100px;
-    height: 30px;
+    height: 20px;
     text-align: center;
     cursor: pointer;
     &:hover {
@@ -493,19 +512,20 @@ export default {
     }
     .cell {
       display: inline-block;
-      height: 40px;
-      line-height: 40px;
+      height: 20px;
+      line-height: 20px;
       word-break: keep-all;
+      border-color: #fff;
     }
   }
   th {
-    background-color: lightblue;
+    background-color: #f9fafb;
   }
   .active {
     .cell {
       display: block;
-      border: 1px solid rgb(94, 41, 192);
-      height: 38px;
+      border: 2px solid rgb(94, 41, 192);
+      // height: 38px;
     }
   }
   table {
@@ -517,7 +537,7 @@ export default {
     position: sticky;
     left: 0;
     z-index: 1;
-    background-color: #dcdcdc;
+    background-color: #f9fafb;
   }
   .add-row-btn {
     position: fixed;
