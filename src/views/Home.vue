@@ -5,13 +5,24 @@
       style="display: flex; align-items: center; justify-content: center"
     >
       <el-button @click="dataBack"> 回显 </el-button>
-      <div v-if="currentCell.id" style="display: flex; align-items: center">
-        {{ currentCell.tr }}行{{ currentCell.td }}列 填充色:
-        <input type="color" name="bgcolor" v-model="currentStyle.background" />
+      <div style="display: flex; align-items: center">
+        填充色:
+        <input
+          :disabled="!currentCell.id"
+          type="color"
+          name="bgcolor"
+          v-model="currentStyle.background"
+        />
         文本颜色:
-        <input type="color" name="color" v-model="currentStyle.color" />
+        <input
+          :disabled="!currentCell.id"
+          type="color"
+          name="color"
+          v-model="currentStyle.color"
+        />
         字体：
         <el-select
+          :disabled="!currentCell.id"
           v-model="currentStyle['font-family']"
           placeholder="请选择字体"
           size="mini"
@@ -26,6 +37,7 @@
         </el-select>
         加粗:
         <el-switch
+          :disabled="!currentCell.id"
           active-value="bold"
           inactive-value="normal"
           v-model="currentStyle['font-weight']"
@@ -47,7 +59,10 @@
           >
           </el-option>
         </el-select> -->
-        <el-radio-group v-model="currentStyle['text-align']">
+        <el-radio-group
+          :disabled="!currentCell.id"
+          v-model="currentStyle['text-align']"
+        >
           <el-radio
             :label="item.label"
             v-for="item in textAlignOpt"
@@ -63,6 +78,7 @@
         <thead>
           <tr>
             <th
+              @contextmenu.stop.prevent="rightClickTh(th)"
               :style="currentCell.td === th.index ? 'background:grey' : ''"
               v-for="(th, _thi) in thList"
               :key="_thi"
@@ -181,7 +197,7 @@ export default {
         background: "#FFFFFF",
         color: "#000000",
         "text-align": "center",
-        "font-weight": 0,
+        "font-weight": "normal",
         "font-family": "auto",
       },
       textAlignOpt: [
@@ -254,6 +270,59 @@ export default {
     this.init();
   },
   methods: {
+    rightClickTh(th) {
+      this.$contextmenu({
+        items: [
+          {
+            label: "删除所在列",
+            icon: "el-icon-delete",
+            onClick: () => this.deleteCol(th),
+          },
+          // {
+          //   label: "设置列宽",
+          //   onClick: () => {
+          //     this.$message.info("设置列宽");
+          //     console.log("设置列宽");
+          //   },
+          // },
+          // { label: "前进(F)", disabled: true },
+          // { label: "重新加载(R)", divided: true, icon: "el-icon-refresh" },
+          // { label: "另存为(A)..." },
+          // { label: "打印(P)...", icon: "el-icon-printer" },
+          // { label: "投射(C)...", divided: true },
+          // {
+          //   label: "使用网页翻译(T)",
+          //   divided: true,
+          //   minWidth: 0,
+          //   children: [
+          //     { label: "翻译成简体中文" },
+          //     { label: "翻译成繁体中文" },
+          //   ],
+          // },
+          // {
+          //   label: "截取网页(R)",
+          //   minWidth: 0,
+          //   children: [
+          //     {
+          //       label: "截取可视化区域",
+          //       onClick: () => {
+          //         this.message = "截取可视化区域";
+          //         console.log("截取可视化区域");
+          //       },
+          //     },
+          //     { label: "截取全屏" },
+          //   ],
+          // },
+          // { label: "查看网页源代码(V)", icon: "el-icon-view" },
+          // { label: "检查(N)" },
+        ],
+        event, // 鼠标事件信息
+        customClass: "rightMenu", // 自定义菜单 class
+        zIndex: 3, // 菜单样式 z-index
+        minWidth: "100%", // 主菜单最小宽度
+      });
+      return false;
+    },
     selectRow(tr) {
       console.log(tr);
     },
@@ -339,6 +408,23 @@ export default {
       this.thList.push({
         title: this.thList.length,
         index: this.thList.length,
+      });
+    },
+    deleteCol(thObj) {
+      if (this.currentCell.td === thObj.index) {
+        this.currentCell = {};
+      }
+      this.trList.forEach((tr, i) => {
+        tr.tdList.forEach((td, _tdi) => {
+          if (td.td === thObj.index) {
+            tr.tdList.splice(_tdi, 1);
+          }
+        });
+      });
+      this.thList.forEach((th, _thi) => {
+        if (th.index === thObj.index) {
+          this.thList.splice(_thi, 1);
+        }
       });
     },
     save() {
@@ -445,6 +531,23 @@ export default {
   th:first-child {
     z-index: 2;
     background-color: lightblue;
+  }
+}
+</style>
+<style lang="less">
+.rightMenu {
+  border: 1px solid rgb(0, 0, 0);
+  padding: 0 !important;
+  border-radius: 0 !important;
+  .menu_item__available {
+    &:hover {
+      background: #5693d9 !important;
+      color: #ffffff !important;
+    }
+  }
+  .menu_item_expand {
+    background: #5693d9 !important;
+    color: #ffffff !important;
   }
 }
 </style>
