@@ -41,6 +41,21 @@
           >
           </el-option>
         </el-select>
+        字号：
+        <el-select
+          :disabled="!currentCell.id"
+          v-model="currentStyle['font-size']"
+          placeholder="请选择字号"
+          size="mini"
+        >
+          <el-option
+            v-for="(item, index) in fontSizeOpt"
+            :key="index"
+            :label="item.label"
+            :value="item.value"
+          >
+          </el-option>
+        </el-select>
         加粗:
         <el-switch
           :disabled="!currentCell.id"
@@ -139,6 +154,7 @@
                 v-if="isEditing && editItem.id === td.id"
                 v-model="td.value"
                 @blur="cancelEdit"
+                size="mini"
                 :id="`${td.id}editCellIpt`"
               ></el-input>
               <template v-else>
@@ -218,6 +234,7 @@ export default {
         "text-align": "center",
         "font-weight": "normal",
         "font-family": "auto",
+        "font-size": "intinal",
       },
       textAlignOpt: [
         {
@@ -281,6 +298,60 @@ export default {
         {
           value: "monospace",
           label: "monospace",
+        },
+      ],
+      fontSizeOpt: [
+        {
+          value: "intinal",
+          label: "默认",
+        },
+        {
+          value: "14px",
+          label: "14px",
+        },
+        {
+          value: "15px",
+          label: "15px",
+        },
+        {
+          value: "16px",
+          label: "16px",
+        },
+        {
+          value: "17px",
+          label: "17px",
+        },
+        {
+          value: "18px",
+          label: "18px",
+        },
+        {
+          value: "19px",
+          label: "19px",
+        },
+        {
+          value: "20px",
+          label: "20px",
+        },
+        {
+          value: "21px",
+          label: "21px",
+        },
+        {
+          value: "22px",
+          label: "22px",
+        },
+        {
+          value: "23px",
+          label: "23px",
+        },
+        {
+          value: "24px",
+          label: "24px",
+        },
+        {
+          value: "55px",
+          label: "55px",
         },
       ],
     };
@@ -491,6 +562,7 @@ export default {
     width: calc(100vw - 100px);
     overflow: auto;
     height: calc(100vh - 100px);
+    border: 1px solid #e2e4e8;
   }
   td,
   th {
