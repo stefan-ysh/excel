@@ -116,7 +116,7 @@
                   ? "L" + currentCell.tr + ",C" + currentCell.td
                   : _thi === 0
                   ? ""
-                  : letterList[_thi - 1]
+                  : convertNumber2ColTitle(_thi)
               }}
             </th>
             <el-button
@@ -193,35 +193,6 @@ export default {
   name: "Excel",
   data() {
     return {
-      // letterList: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z']
-      letterList: [
-        "A",
-        "B",
-        "C",
-        "D",
-        "E",
-        "F",
-        "G",
-        "H",
-        "I",
-        "J",
-        "K",
-        "L",
-        "M",
-        "N",
-        "O",
-        "P",
-        "Q",
-        "R",
-        "S",
-        "T",
-        "U",
-        "V",
-        "W",
-        "X",
-        "Y",
-        "Z",
-      ],
       thList: [],
       trList: [],
       currentCell: {},
@@ -360,6 +331,18 @@ export default {
     this.init();
   },
   methods: {
+    convertNumber2ColTitle(columnNumber) {
+      if (columnNumber <= 0) return "";
+      let res = [];
+      while (columnNumber) {
+        // 通过让 columnNumber - 1，使得余数 remain 减少 1
+        columnNumber--;
+        let remain = columnNumber % 26;
+        res.unshift(String.fromCharCode(remain + 65));
+        columnNumber = Math.floor(columnNumber / 26);
+      }
+      return res.join("");
+    },
     rightClickTh(th) {
       this.$contextmenu({
         items: [
@@ -414,7 +397,7 @@ export default {
       return false;
     },
     selectRow(tr) {
-      console.log(tr);
+      console.log(tr, 'selected row');
     },
     convertStyle(styleObj) {
       ["font-size", "line-height"];
