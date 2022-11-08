@@ -1,14 +1,7 @@
 <template>
   <div class="container">
     <div class="tools">
-      <div
-        style="
-          width: 100%;
-          display: flex;
-          align-items: center;
-          justify-content: space-between;
-        "
-      >
+      <div class="tools__content">
         背景色:
         <n-color-picker
           :disabled="!currentCell.id"
@@ -44,12 +37,8 @@
           v-model:value="currentStyle['font-weight']"
           :disabled="!currentCell.id"
         >
-          <template #checked>
-            加粗
-          </template>
-          <template #unchecked>
-            正常
-          </template>
+          <template #checked> 加粗 </template>
+          <template #unchecked> 正常 </template>
         </n-switch>
         <!-- 水平对齐: -->
         <!-- <el-select
@@ -90,10 +79,10 @@
             </n-radio>
           </n-space>
         </n-radio-group>
-        <n-button size="mini" type="primary" plain @click="dataBack">
+        <n-button size="small" type="primary" plain @click="dataBack">
           回显
         </n-button>
-        <n-button size="mini" type="primary" @click="save">保存</n-button>
+        <n-button size="small" type="primary" @click="save">保存</n-button>
       </div>
     </div>
     <div class="excel" @click="clickContainer">
@@ -200,9 +189,9 @@ import {
 import { nextTick, onMounted, ref } from "vue";
 const thList = ref<any>([]);
 const trList = ref<any>([]);
-const currentCell = ref({});
-const currentStyle = ref({});
-const editItem = ref({});
+const currentCell = ref<any>({});
+const currentStyle = ref<any>({});
+const editItem = ref<any>({});
 const isEditing = ref(false);
 const cellStyle = ref({
   background: "#FFFFFF",
@@ -345,59 +334,59 @@ const convertNumber2ColTitle = (columnNumber: number) => {
   }
   return res.join("");
 };
-// const rightClickTh = (th) => {
-//   this.$contextmenu({
-//     items: [
-//       {
-//         label: "删除所在列",
-//         icon: "el-icon-delete",
-//         onClick: () => this.deleteCol(th),
-//       },
-//       // {
-//       //   label: "设置列宽",
-//       //   onClick: () => {
-//       //     this.$message.info("设置列宽");
-//       //     console.log("设置列宽");
-//       //   },
-//       // },
-//       // { label: "前进(F)", disabled: true },
-//       // { label: "重新加载(R)", divided: true, icon: "el-icon-refresh" },
-//       // { label: "另存为(A)..." },
-//       // { label: "打印(P)...", icon: "el-icon-printer" },
-//       // { label: "投射(C)...", divided: true },
-//       // {
-//       //   label: "使用网页翻译(T)",
-//       //   divided: true,
-//       //   minWidth: 0,
-//       //   children: [
-//       //     { label: "翻译成简体中文" },
-//       //     { label: "翻译成繁体中文" },
-//       //   ],
-//       // },
-//       // {
-//       //   label: "截取网页(R)",
-//       //   minWidth: 0,
-//       //   children: [
-//       //     {
-//       //       label: "截取可视化区域",
-//       //       onClick: () => {
-//       //         this.message = "截取可视化区域";
-//       //         console.log("截取可视化区域");
-//       //       },
-//       //     },
-//       //     { label: "截取全屏" },
-//       //   ],
-//       // },
-//       // { label: "查看网页源代码(V)", icon: "el-icon-view" },
-//       // { label: "检查(N)" },
-//     ],
-//     event, // 鼠标事件信息
-//     customClass: "rightMenu", // 自定义菜单 class
-//     zIndex: 3, // 菜单样式 z-index
-//     minWidth: "100%", // 主菜单最小宽度
-//   });
-//   return false;
-// }
+const rightClickTh = (th: any) => {
+  // this.$contextmenu({
+  //   items: [
+  //     {
+  //       label: "删除所在列",
+  //       icon: "el-icon-delete",
+  //       onClick: () => this.deleteCol(th),
+  //     },
+  //     // {
+  //     //   label: "设置列宽",
+  //     //   onClick: () => {
+  //     //     this.$message.info("设置列宽");
+  //     //     console.log("设置列宽");
+  //     //   },
+  //     // },
+  //     // { label: "前进(F)", disabled: true },
+  //     // { label: "重新加载(R)", divided: true, icon: "el-icon-refresh" },
+  //     // { label: "另存为(A)..." },
+  //     // { label: "打印(P)...", icon: "el-icon-printer" },
+  //     // { label: "投射(C)...", divided: true },
+  //     // {
+  //     //   label: "使用网页翻译(T)",
+  //     //   divided: true,
+  //     //   minWidth: 0,
+  //     //   children: [
+  //     //     { label: "翻译成简体中文" },
+  //     //     { label: "翻译成繁体中文" },
+  //     //   ],
+  //     // },
+  //     // {
+  //     //   label: "截取网页(R)",
+  //     //   minWidth: 0,
+  //     //   children: [
+  //     //     {
+  //     //       label: "截取可视化区域",
+  //     //       onClick: () => {
+  //     //         this.message = "截取可视化区域";
+  //     //         console.log("截取可视化区域");
+  //     //       },
+  //     //     },
+  //     //     { label: "截取全屏" },
+  //     //   ],
+  //     // },
+  //     // { label: "查看网页源代码(V)", icon: "el-icon-view" },
+  //     // { label: "检查(N)" },
+  //   ],
+  //   event, // 鼠标事件信息
+  //   customClass: "rightMenu", // 自定义菜单 class
+  //   zIndex: 3, // 菜单样式 z-index
+  //   minWidth: "100%", // 主菜单最小宽度
+  // });
+  // return false;
+}
 const selectRow = (tr) => {
   console.log(tr, "selected row");
 };
@@ -533,6 +522,12 @@ const clickContainer = () => {
     display: flex;
     align-items: center;
     justify-content: center;
+    &__content {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
   }
   .excel {
     width: calc(100vw - 100px);
