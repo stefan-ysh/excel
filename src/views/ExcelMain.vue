@@ -80,6 +80,7 @@
                     v-model="td.value"
                     @blur="handleIptBlur"
                     :id="`${td.id}editCellIpt`"
+                    style="outline: none;border:none"
                   />
                   <template v-else>
                     <span class="cell">
@@ -629,6 +630,8 @@ const clickContainer = () => {
         .cell {
           display: block;
           border: 2px solid rgb(94, 41, 192);
+          height: 100%;
+          word-wrap:break-word;
           // height: 38px;
         }
       }
