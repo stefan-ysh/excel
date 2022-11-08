@@ -15,10 +15,10 @@
 } */
 
 @media (min-width: 1024px) {
-  body {
+  /* body {
     display: flex;
     place-items: center;
-  }
+  } */
 
   #app {
     /* display: grid;

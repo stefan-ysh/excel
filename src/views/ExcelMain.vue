@@ -1,47 +1,164 @@
 <template>
   <div class="container">
-    <div class="tools">
-      <div class="tools__content">
-        背景色:
-        <n-color-picker
-          :disabled="!currentCell.id"
-          v-model:value="currentStyle.background"
-          :show-alpha="false"
-        />
-        文本色:
-        <n-color-picker
-          :disabled="!currentCell.id"
-          v-model:value="currentStyle.color"
-          :show-alpha="false"
-        />
-        <!-- 字体： -->
-        <n-select
-          :disabled="!currentCell.id"
-          v-model:value="currentStyle['font-family']"
-          placeholder="请选择字体"
-          size="tiny"
-          :options="fontFamilyOpt"
-        >
-        </n-select>
-        <!-- 字号： -->
-        <n-select
-          :disabled="!currentCell.id"
-          v-model:value="currentStyle['font-size']"
-          placeholder="请选择字号"
-          size="tiny"
-          :options="fontSizeOpt"
-        >
-        </n-select>
-        <!-- 加粗: -->
-        <n-switch
-          v-model:value="currentStyle['font-weight']"
-          :disabled="!currentCell.id"
-        >
-          <template #checked> 加粗 </template>
-          <template #unchecked> 正常 </template>
-        </n-switch>
-        <!-- 水平对齐: -->
-        <!-- <el-select
+    <div class="top">
+      <div style="display: flex">
+        <n-button size="small">显示</n-button>
+        <n-button size="small">缩放</n-button>
+      </div>
+      <div>
+        <n-button size="small">添加类别</n-button>
+        <n-button size="small">数据透视表</n-button>
+      </div>
+      <div>
+        <n-button size="small">插入</n-button>
+        <n-button size="small">表格</n-button>
+        <n-button size="small">图表</n-button>
+        <n-button size="small">文本</n-button>
+        <n-button size="small">形状</n-button>
+        <n-button size="small">媒体</n-button>
+        <n-button size="small">批注</n-button>
+      </div>
+      <n-button size="small">共享</n-button>
+      <div>
+        <n-button size="small"> 格式 </n-button>
+        <n-button size="small"> 整理 </n-button>
+        <n-button size="small" plain @click="dataBack"> 回显 </n-button>
+        <n-button size="small" @click="save">保存</n-button>
+      </div>
+    </div>
+    <div class="bottom" style="display: flex">
+      <div class="left" style="overflow: scroll">
+        <div class="excel" @click="clickContainer">
+          <table cellspacing="0">
+            <thead>
+              <tr>
+                <th
+                  @contextmenu.stop.prevent="rightClickTh(th)"
+                  :style="
+                    currentCell.td === th.index
+                      ? 'background:#eaebec;border-bottom:1px solid black;'
+                      : ''
+                  "
+                  v-for="(th, _thi) in thList"
+                  :key="_thi"
+                >
+                  {{
+                    _thi === 0 && currentCell.id
+                      ? "L" + currentCell.tr + ",C" + currentCell.td
+                      : _thi === 0
+                      ? ""
+                      : convertNumber2ColTitle(_thi)
+                  }}
+                </th>
+                <n-button @click="addCol" size="small"> 添加列 </n-button>
+              </tr>
+            </thead>
+            <tbody class="tBody">
+              <tr
+                :style="`height:${tr.height}px`"
+                v-for="(tr, _tri) in trList"
+                :key="_tri"
+              >
+                <td
+                  :style="
+                    _tdi === 0 && currentCell.tr === td.tr
+                      ? 'background:#eaebec;border-right:1px solid black;'
+                      : _tdi === 0
+                      ? ''
+                      : convertStyle(td.style)
+                  "
+                  v-for="(td, _tdi) in tr.tdList"
+                  :key="_tdi"
+                  :class="`
+                  ${currentCell.id === td.id ? 'active' : ''}
+                `"
+                  @click.stop="_tdi === 0 ? selectRow(tr) : clickCell(td)"
+                  @dblclick="editCell(td)"
+                >
+                  <n-input
+                    v-if="isEditing && editItem.id === td.id"
+                    v-model:value="td.value"
+                    @blur="handleIptBlur"
+                    size="tiny"
+                    :id="`${td.id}editCellIpt`"
+                  ></n-input>
+                  <template v-else>
+                    <span class="cell">
+                      {{ td.value }}
+                    </span>
+                  </template>
+                  <!-- 调节行高的 bar -->
+                  <div
+                    v-if="_tdi === 0"
+                    style="
+                      cursor: ns-resize;
+                      width: 100px;
+                      height: 5px;
+                      position: absolute;
+                      bottom: -2px;
+                    "
+                  ></div>
+                </td>
+              </tr>
+              <n-button class="add-row-btn" @click="addRow" size="small">
+                添加行
+              </n-button>
+            </tbody>
+          </table>
+        </div>
+      </div>
+      <div class="right" style="display: flex; flex-direction: column">
+        <n-tabs type="segment">
+          <n-tab-pane
+            v-for="tab in tabs"
+            :key="tab.value"
+            :name="tab.value"
+            :tab="tab.label"
+          >
+            {{ tab.value }}
+          </n-tab-pane>
+        </n-tabs>
+        <div class="tools__content">
+          <!-- 背景色: -->
+          <n-color-picker
+            :disabled="!currentCell.id"
+            v-model:value="currentStyle.background"
+            :show-alpha="false"
+          />
+          <!-- 文本色: -->
+          <n-color-picker
+            :disabled="!currentCell.id"
+            v-model:value="currentStyle.color"
+            :show-alpha="false"
+          />
+          <!-- 字体： -->
+          <n-select
+            :disabled="!currentCell.id"
+            v-model:value="currentStyle['font-family']"
+            placeholder="请选择字体"
+            size="tiny"
+            :options="fontFamilyOpt"
+          >
+          </n-select>
+          <!-- 字号： -->
+          <n-select
+            :disabled="!currentCell.id"
+            v-model:value="currentStyle['font-size']"
+            placeholder="请选择字号"
+            size="tiny"
+            :options="fontSizeOpt"
+          >
+          </n-select>
+          <!-- 加粗: -->
+          <n-switch
+            v-model:value="currentStyle['font-weight']"
+            :disabled="!currentCell.id"
+          >
+            <template #checked> 加粗 </template>
+            <template #unchecked> 正常 </template>
+          </n-switch>
+          <!-- 水平对齐: -->
+          <!-- <el-select
             size="mini"
             v-model="currentStyle['text-align']"
             placeholder="请选择水平对齐方式"
@@ -54,7 +171,7 @@
             >
             </el-option>
           </el-select> -->
-        <!-- <el-radio-group
+          <!-- <el-radio-group
           :disabled="!currentCell.id"
           v-model="currentStyle['text-align']"
         >
@@ -65,110 +182,23 @@
             >{{ item.value }}</el-radio
           >
         </el-radio-group> -->
-        <n-radio-group
-          v-model:value="currentStyle['text-align']"
-          :disabled="!currentCell.id"
-        >
-          <n-space>
-            <n-radio
-            style="width:100px"
-              :value="item.label"
-              v-for="item in textAlignOpt"
-              :key="item.value"
-            >
-              {{ item.label }}
-            </n-radio>
-          </n-space>
-        </n-radio-group>
-        <n-button size="small" type="primary" plain @click="dataBack">
-          回显
-        </n-button>
-        <n-button size="small" type="primary" @click="save">保存</n-button>
-      </div>
-    </div>
-    <div class="excel" @click="clickContainer">
-      <table cellspacing="0">
-        <thead>
-          <tr>
-            <th
-              @contextmenu.stop.prevent="rightClickTh(th)"
-              :style="
-                currentCell.td === th.index
-                  ? 'background:#eaebec;border-bottom:1px solid black;'
-                  : ''
-              "
-              v-for="(th, _thi) in thList"
-              :key="_thi"
-            >
-              {{
-                _thi === 0 && currentCell.id
-                  ? "L" + currentCell.tr + ",C" + currentCell.td
-                  : _thi === 0
-                  ? ""
-                  : convertNumber2ColTitle(_thi)
-              }}
-            </th>
-            <n-button
-              style="position: fixed; right: 0"
-              @click="addCol"
-              size="small"
-            >
-              添加列
-            </n-button>
-          </tr>
-        </thead>
-        <tbody class="tBody">
-          <tr
-            :style="`height:${tr.height}px`"
-            v-for="(tr, _tri) in trList"
-            :key="_tri"
+          <n-radio-group
+            v-model:value="currentStyle['text-align']"
+            :disabled="!currentCell.id"
           >
-            <td
-              :style="
-                _tdi === 0 && currentCell.tr === td.tr
-                  ? 'background:#eaebec;border-right:1px solid black;'
-                  : _tdi === 0
-                  ? ''
-                  : convertStyle(td.style)
-              "
-              v-for="(td, _tdi) in tr.tdList"
-              :key="_tdi"
-              :class="`
-                  ${currentCell.id === td.id ? 'active' : ''}
-                `"
-              @click.stop="_tdi === 0 ? selectRow(tr) : clickCell(td)"
-              @dblclick="editCell(td)"
-            >
-              <n-input
-                v-if="isEditing && editItem.id === td.id"
-                v-model:value="td.value"
-                @blur="handleIptBlur"
-                size="tiny"
-                :id="`${td.id}editCellIpt`"
-              ></n-input>
-              <template v-else>
-                <span class="cell">
-                  {{ td.value }}
-                </span>
-              </template>
-              <!-- 调节行高的 bar -->
-              <div
-                v-if="_tdi === 0"
-                style="
-                  cursor: ns-resize;
-                  width: 100px;
-                  height: 5px;
-                  position: absolute;
-                  bottom: -2px;
-                "
-              ></div>
-            </td>
-          </tr>
-          <n-button class="add-row-btn" @click="addRow" size="small">
-            添加行
-          </n-button>
-        </tbody>
-      </table>
+            <n-space>
+              <n-radio
+                style="width: 100px"
+                :value="item.label"
+                v-for="item in textAlignOpt"
+                :key="item.value"
+              >
+                {{ item.label }}
+              </n-radio>
+            </n-space>
+          </n-radio-group>
+        </div>
+      </div>
     </div>
   </div>
 </template>
@@ -186,6 +216,8 @@ import {
   NButton,
   NInput,
   NColorPicker,
+  NTabs,
+  NTabPane,
 } from "naive-ui";
 import { nextTick, onMounted, ref } from "vue";
 const thList = ref<any>([]);
@@ -194,6 +226,24 @@ const currentCell = ref<any>({});
 const currentStyle = ref<any>({});
 const editItem = ref<any>({});
 const isEditing = ref(false);
+const tabs = [
+  {
+    value: "table",
+    label: "表格",
+  },
+  {
+    value: "cell",
+    label: "单元格",
+  },
+  {
+    value: "text",
+    label: "文本",
+  },
+  {
+    value: "palce",
+    label: "排列",
+  },
+];
 const cellStyle = ref({
   background: "#FFFFFF",
   color: "#000000",
@@ -387,7 +437,7 @@ const rightClickTh = (th: any) => {
   //   minWidth: "100%", // 主菜单最小宽度
   // });
   // return false;
-}
+};
 const selectRow = (tr) => {
   console.log(tr, "selected row");
 };
@@ -518,83 +568,101 @@ const clickContainer = () => {
 </script>
 <style lang="less" scoped>
 .container {
-  .tools {
+  // .tools {
+  //   height: 50px;
+  //   display: flex;
+  //   align-items: center;
+  //   justify-content: center;
+  //   &__content {
+  //     // width: 100%;
+  //     display: flex;
+  //     align-items: center;
+  //     justify-content: space-between;
+  //   }
+  // }
+  .top {
     height: 50px;
+    background-color: #f6f3f8;
     display: flex;
+    justify-content: space-between;
     align-items: center;
-    justify-content: center;
-    &__content {
-      width: 100%;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
   }
-  .excel {
-    width: calc(100vw - 100px);
-    overflow: auto;
-    height: calc(100vh - 100px);
-    border: 1px solid #e2e4e8;
-  }
-  td,
-  th {
-    border-right: 1px solid #e2e4e8;
-    border-bottom: 1px solid #e2e4e8;
-    width: 100px;
-    height: 20px;
-    text-align: center;
-    cursor: pointer;
-    &:hover {
-      background: rgba(143, 170, 228, 0.5);
-    }
-  }
-  td {
-    :deep(.n-input) {
-      .n-input__inner {
+  .bottom {
+    .left {
+      .excel {
+        width: calc(100vw - 100px);
+        overflow: auto;
+        height: calc(100vh - 100px);
+        border: 1px solid #e2e4e8;
+      }
+      td,
+      th {
+        border-right: 1px solid #e2e4e8;
+        border-bottom: 1px solid #e2e4e8;
+        width: 100px;
+        height: 20px;
         text-align: center;
+        cursor: pointer;
+        &:hover {
+          background: rgba(143, 170, 228, 0.5);
+        }
+      }
+      td {
+        :deep(.n-input) {
+          .n-input__inner {
+            text-align: center;
+          }
+        }
+        .cell {
+          display: inline-block;
+          height: 20px;
+          line-height: 20px;
+          word-break: keep-all;
+          border-color: #fff;
+        }
+      }
+      th {
+        background-color: #f9fafb;
+      }
+      .active {
+        .cell {
+          display: block;
+          border: 2px solid rgb(94, 41, 192);
+          // height: 38px;
+        }
+      }
+      table {
+        table-layout: fixed;
+        width: 100%;
+      }
+      td:first-child,
+      th:first-child {
+        position: sticky;
+        left: 0;
+        z-index: 1;
+        background-color: #f9fafb;
+      }
+      .add-row-btn {
+        position: fixed;
+        left: 0;
+        bottom: 0;
+      }
+      thead {
+        z-index: 9999;
+      }
+      thead tr th {
+        position: sticky;
+        top: 0;
+      }
+      th:first-child {
+        z-index: 2;
+        background-color: lightblue;
       }
     }
-    .cell {
-      display: inline-block;
-      height: 20px;
-      line-height: 20px;
-      word-break: keep-all;
-      border-color: #fff;
+    .right {
+      height: calc(100vh - 50px);
+      background: #f0ecf2;
     }
-  }
-  th {
-    background-color: #f9fafb;
-  }
-  .active {
-    .cell {
-      display: block;
-      border: 2px solid rgb(94, 41, 192);
-      // height: 38px;
-    }
-  }
-  table {
-    table-layout: fixed;
-    width: 100%;
-  }
-  td:first-child,
-  th:first-child {
-    position: sticky;
-    left: 0;
-    z-index: 1;
-    background-color: #f9fafb;
-  }
-  .add-row-btn {
-    position: fixed;
-    left: 0;
-    bottom: 0;
-  }
-  thead tr th {
-    position: sticky;
-    top: 0;
-  }
-  th:first-child {
-    z-index: 2;
-    background-color: lightblue;
   }
 }
 </style>
