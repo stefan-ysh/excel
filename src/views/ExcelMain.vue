@@ -71,7 +71,7 @@
         >
           <n-space>
             <n-radio
-            style="width: 100px"
+            style="width:100px"
               :value="item.label"
               v-for="item in textAlignOpt"
               :key="item.value"
@@ -141,7 +141,7 @@
             >
               <n-input
                 v-if="isEditing && editItem.id === td.id"
-                v-model="td.value"
+                v-model:value="td.value"
                 @blur="handleIptBlur"
                 size="tiny"
                 :id="`${td.id}editCellIpt`"
