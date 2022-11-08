@@ -6,22 +6,22 @@
           width: 100%;
           display: flex;
           align-items: center;
-          justify-content: space-around;
+          justify-content: space-between;
         "
       >
-        填充色:
+        背景色:
         <n-color-picker
           :disabled="!currentCell.id"
           v-model:value="currentStyle.background"
           :show-alpha="false"
         />
-        文本颜色:
+        文本色:
         <n-color-picker
           :disabled="!currentCell.id"
           v-model:value="currentStyle.color"
           :show-alpha="false"
         />
-        字体：
+        <!-- 字体： -->
         <n-select
           :disabled="!currentCell.id"
           v-model="currentStyle['font-family']"
@@ -30,7 +30,7 @@
           :options="fontFamilyOpt"
         >
         </n-select>
-        字号：
+        <!-- 字号： -->
         <n-select
           :disabled="!currentCell.id"
           v-model="currentStyle['font-size']"
@@ -39,12 +39,19 @@
           :options="fontSizeOpt"
         >
         </n-select>
-        加粗:
+        <!-- 加粗: -->
         <n-switch
           v-model:value="currentStyle['font-weight']"
           :disabled="!currentCell.id"
-        />
-        水平对齐:
+        >
+          <template #checked>
+            加粗
+          </template>
+          <template #unchecked>
+            正常
+          </template>
+        </n-switch>
+        <!-- 水平对齐: -->
         <!-- <el-select
             size="mini"
             v-model="currentStyle['text-align']"
