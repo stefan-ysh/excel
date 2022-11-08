@@ -75,13 +75,12 @@
                   @click.stop="_tdi === 0 ? selectRow(tr) : clickCell(td)"
                   @dblclick="editCell(td)"
                 >
-                  <n-input
+                  <input
                     v-if="isEditing && editItem.id === td.id"
-                    v-model:value="td.value"
+                    v-model="td.value"
                     @blur="handleIptBlur"
-                    size="tiny"
                     :id="`${td.id}editCellIpt`"
-                  ></n-input>
+                  />
                   <template v-else>
                     <span class="cell">
                       {{ td.value }}
@@ -153,6 +152,8 @@
           <n-switch
             v-model:value="currentStyle['font-weight']"
             :disabled="!currentCell.id"
+            checked-value="bold"
+            unchecked-value="normal"
           >
             <template #checked> 加粗 </template>
             <template #unchecked> 正常 </template>
@@ -492,8 +493,8 @@ const editCell = (td) => {
   isEditing.value = true;
   editItem.value = td;
   nextTick(() => {
-    let ipt = document.getElementById(td.id + "editCellIpt");
-    (ipt as any).focus();
+    const ipt: HTMLElement = document.getElementById(td.id + "editCellIpt");
+    ipt.focus();
   });
 };
 
