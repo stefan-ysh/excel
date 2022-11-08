@@ -80,7 +80,7 @@
                     v-model="td.value"
                     @blur="handleIptBlur"
                     :id="`${td.id}editCellIpt`"
-                    style="outline: none; border: none"
+                    style="outline: none; border: none;height:100%;"
                   />
                   <template v-else>
                     <span class="cell">
@@ -491,6 +491,7 @@ const clickCell = (td) => {
 
 // 双击编辑单元格
 const editCell = (td) => {
+  // todo E11 报错问题修复
   isEditing.value = true;
   editItem.value = td;
   nextTick(() => {
@@ -616,11 +617,9 @@ const clickContainer = () => {
           }
         }
         .cell {
-          display: inline-block;
-          height: 20px;
-          line-height: 20px;
-          word-break: keep-all;
-          border-color: #fff;
+          display: block;
+          height: 100%;
+          word-wrap: break-word;
         }
       }
       th {
@@ -632,6 +631,7 @@ const clickContainer = () => {
           border: 2px solid rgb(94, 41, 192);
           height: 100%;
           word-wrap: break-word;
+          margin: -2px;
           // height: 38px;
         }
       }
