@@ -71,6 +71,7 @@
         >
           <n-space>
             <n-radio
+            style="width: 100px"
               :value="item.label"
               v-for="item in textAlignOpt"
               :key="item.value"
