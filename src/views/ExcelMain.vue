@@ -17,7 +17,7 @@
         <!-- 字体： -->
         <n-select
           :disabled="!currentCell.id"
-          v-model="currentStyle['font-family']"
+          v-model:value="currentStyle['font-family']"
           placeholder="请选择字体"
           size="tiny"
           :options="fontFamilyOpt"
@@ -26,7 +26,7 @@
         <!-- 字号： -->
         <n-select
           :disabled="!currentCell.id"
-          v-model="currentStyle['font-size']"
+          v-model:value="currentStyle['font-size']"
           placeholder="请选择字号"
           size="tiny"
           :options="fontSizeOpt"
