@@ -110,6 +110,7 @@
               "
               v-for="(th, _thi) in thList"
               :key="_thi"
+              :id="`th${_thi}`"
             >
               {{
                 _thi === 0 && currentCell.id
@@ -133,6 +134,7 @@
             :style="`height:${tr.height}px`"
             v-for="(tr, _tri) in trList"
             :key="_tri"
+            :id="`tr${_tri}`"
           >
             <td
               :style="
@@ -467,6 +469,12 @@ export default {
         height: 20,
         tdList,
       });
+      // 平滑滚动到最新一行
+      this.$nextTick(() => {
+        let index = this.trList.length - 1;
+        let tr = document.getElementById("tr" + index);
+        tr.scrollIntoView({ behavior: "smooth", block: "center" });
+      })
     },
     addCol() {
       this.trList.forEach((tr, i) => {
@@ -482,6 +490,13 @@ export default {
         title: this.thList.length,
         index: this.thList.length,
       });
+      // 平滑滚动到最新列
+      this.$nextTick(() => {
+        let index = this.thList.length - 1;
+        let th = document.getElementById("th" + index);
+        console.log('[ th ] >', th)
+        th.scrollIntoView({ behavior: "smooth", block: "center" });
+      })
     },
     deleteCol(thObj) {
       if (this.currentCell.td === thObj.index) {
