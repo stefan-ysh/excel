@@ -26,8 +26,8 @@
         <n-button size="small" @click="save">保存</n-button>
       </div>
     </div>
-    <div class="bottom" style="display: flex">
-      <div class="left" style="overflow: scroll">
+    <div class="bottom flex">
+      <div class="left overflow-scroll">
         <div class="excel" @click="clickContainer">
           <table cellspacing="0">
             <thead>
@@ -41,6 +41,7 @@
                   "
                   v-for="(th, _thi) in thList"
                   :key="_thi"
+                  :id="`th${_thi}`"
                 >
                   {{
                     _thi === 0 && currentCell.id
@@ -50,7 +51,7 @@
                       : convertNumber2ColTitle(_thi)
                   }}
                 </th>
-                <n-button @click="addCol" size="small"> 添加列 </n-button>
+                <n-button @click="addCol" size="small" id="addColBtn"> 添加列 </n-button>
               </tr>
             </thead>
             <tbody class="tBody">
@@ -58,6 +59,7 @@
                 :style="`height:${tr.height}px`"
                 v-for="(tr, _tri) in trList"
                 :key="_tri"
+                :id="`tr${_tri}`"
               >
                 <td
                   :style="
@@ -80,7 +82,7 @@
                     v-model="td.value"
                     @blur="handleIptBlur"
                     :id="`${td.id}editCellIpt`"
-                    style="outline: none; border: none;height:100%;"
+                    class=" outline-none w-full h-full"
                   />
                   <template v-else>
                     <span class="cell">
@@ -222,11 +224,37 @@ import {
   NTabPane,
 } from "naive-ui";
 import { nextTick, onMounted, ref } from "vue";
-const thList = ref<any>([]);
-const trList = ref<any>([]);
-const currentCell = ref<any>({});
-const currentStyle = ref<any>({});
-const editItem = ref<any>({});
+// 定义类型
+interface CellStyle {
+  [key: string]: string;
+}
+interface Tr {
+  tr: number;
+  height: number;
+  tdList: Td[];
+}
+interface Th {
+  title: string | number;
+  index: number;
+}
+interface Td {
+  value: string | number;
+  id: string;
+  tr: number;
+  td: string | number;
+  style: CellStyle;
+}
+interface Cell {
+  id?: string;
+  tr?: number | string;
+  td?: number | string;
+  style?: CellStyle;
+}
+const thList = ref<Th[]>([]);
+const trList = ref<Tr[]>([]);
+const currentCell = ref<Cell>({});
+const currentStyle = ref<CellStyle>({});
+const editItem = ref<Cell>({});
 const isEditing = ref(false);
 const tabs = [
   {
@@ -387,7 +415,7 @@ const convertNumber2ColTitle = (columnNumber: number) => {
   }
   return res.join("");
 };
-const rightClickTh = (th: any) => {
+const rightClickTh = (th: Th) => {
   // this.$contextmenu({
   //   items: [
   //     {
@@ -516,6 +544,14 @@ const addRow = () => {
     height: 20,
     tdList,
   });
+  // 滚动到指定位置
+  nextTick(() => {
+    const idx = trList.value.length - 1;
+    const tr: HTMLElement = document.getElementById(
+      `tr${idx}`
+    )
+    tr && tr.scrollIntoView({ behavior: "smooth", block: "center" });
+  })
 };
 
 // 增加列
@@ -533,6 +569,11 @@ const addCol = () => {
     title: thList.value.length,
     index: thList.value.length,
   });
+  // 滚动到指定位置
+  nextTick(() => {
+    const th: HTMLElement = document.getElementById('addColBtn')
+    th && th.scrollIntoView({ behavior: "smooth", block: "center" });
+  })
 };
 
 // const deleteCol = (thObj) => {
